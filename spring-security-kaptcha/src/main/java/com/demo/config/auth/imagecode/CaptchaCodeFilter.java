@@ -1,7 +1,15 @@
 package com.demo.config.auth.imagecode;
 
-import com.demo.config.auth.handler.MyAuthenticationFailureHandler;
-import com.demo.config.constant.SecurityContants;
+import java.io.IOException;
+import java.util.Objects;
+
+import javax.annotation.Resource;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.session.SessionAuthenticationException;
@@ -11,20 +19,19 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.annotation.Resource;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.util.Objects;
+import com.demo.config.auth.handler.MyAuthenticationFailureHandler;
+import com.demo.config.constant.SecurityContants;
 
 /**
  * 自定义验证码 过滤器
+ * 在spring中，filter都默认继承OncePerRequestFilter，但为什么要这样呢？
+    OncePerRequestFilter顾名思义，他能够确保在一次请求只通过一次filter，而不需要重复执行
+                    在servlet-2.3中，Filter会过滤一切请求，包括服务器内部使用forward转发请求和<%@ include file="/index.jsp"%>的情况。
+                    到了servlet-2.4中Filter默认下只拦截外部提交的请求，forward和include这些内部转发都不会被过滤，但是有时候我们需要 forward的时候也用到Filter。
+         因此，为了兼容各种不同的运行环境和版本，默认filter继承OncePerRequestFilter是一个比较稳妥的选择。
  */
 @Component
-public class CaptchaCodeFilter extends OncePerRequestFilter {
+public class CaptchaCodeFilter extends OncePerRequestFilter { //放到用户名密码登录过滤器之前执行,所以登陆之后的访问是不是进入的
 
     @Resource
     MyAuthenticationFailureHandler myAuthenticationFailureHandler;
@@ -40,7 +47,7 @@ public class CaptchaCodeFilter extends OncePerRequestFilter {
             try{
                 //验证谜底与用户输入是否匹配
                 this.validate(new ServletWebRequest(request));
-            }catch(AuthenticationException e){
+            }catch(AuthenticationException e){ // validate 抛出的异常可自定义继承 AuthenticationException
                 myAuthenticationFailureHandler.onAuthenticationFailure(
                         request,response,e
                 );

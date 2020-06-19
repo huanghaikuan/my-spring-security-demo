@@ -1,17 +1,7 @@
 package com.demo.config.auth.smscode;
 
-import com.demo.config.auth.handler.MyAuthenticationFailureHandler;
-import com.demo.constant.SecurityContants;
-import com.demo.dao.MyUserDetailsServiceMapper;
-import com.demo.entity.MyUserDetails;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.session.SessionAuthenticationException;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.context.request.ServletWebRequest;
-import org.springframework.web.filter.OncePerRequestFilter;
+import java.io.IOException;
+import java.util.Objects;
 
 import javax.annotation.Resource;
 import javax.servlet.FilterChain;
@@ -19,12 +9,26 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.authentication.session.SessionAuthenticationException;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.demo.config.auth.handler.MyAuthenticationFailureHandler;
+import com.demo.constant.SecurityContants;
+import com.demo.dao.MyUserDetailsServiceMapper;
+import com.demo.entity.MyUserDetails;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 校验短信验证码是否正确的过滤器
  */
+@Slf4j
 @Component
 public class SmsCodeValidateFilter extends OncePerRequestFilter {
 
@@ -47,6 +51,7 @@ public class SmsCodeValidateFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
+        log.info("-------------SmsCodeValidateFilter----------------" + request.getRequestURI());
         if(StringUtils.equals("/smslogin",request.getRequestURI())
                 && StringUtils.equalsIgnoreCase(request.getMethod(),"post")){
 

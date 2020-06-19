@@ -1,7 +1,15 @@
 package com.demo.config.auth.imagecode;
 
-import com.demo.config.auth.handler.MyAuthenticationFailureHandler;
-import com.demo.constant.SecurityContants;
+import java.io.IOException;
+import java.util.Objects;
+
+import javax.annotation.Resource;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.session.SessionAuthenticationException;
@@ -11,18 +19,15 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.annotation.Resource;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.util.Objects;
+import com.demo.config.auth.handler.MyAuthenticationFailureHandler;
+import com.demo.constant.SecurityContants;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 自定义验证码 过滤器
  */
+@Slf4j
 @Component
 public class CaptchaCodeFilter extends OncePerRequestFilter {
 
@@ -34,6 +39,7 @@ public class CaptchaCodeFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
+        log.info("-------------CaptchaCodeFilter----------------" + request.getRequestURI());
         // 只有在登录请求时才有验证码校验
         if(StringUtils.equals("/login",request.getRequestURI())
                 && StringUtils.equalsIgnoreCase(request.getMethod(),"post")){

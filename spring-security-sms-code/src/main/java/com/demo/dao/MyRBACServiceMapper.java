@@ -1,10 +1,12 @@
 package com.demo.dao;
 
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+/*
+ *  RBAC(Role-Based Access Control)模型
+ */
 public interface MyRBACServiceMapper {
 
     @Select("SELECT url\n" +

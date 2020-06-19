@@ -1,14 +1,16 @@
 package com.demo.service;
 
-import com.demo.dao.MyRBACServiceMapper;
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+import com.demo.dao.MyRBACServiceMapper;
 
 @Component("rabcService")
 public class MyRBACService {
@@ -30,7 +32,7 @@ public class MyRBACService {
             String username = ((UserDetails)principal).getUsername();
 
             List<String> urls = myRBACServiceMapper.findUrlsByUserName(username);
-
+            System.out.println(urls+"---------------------"+request.getRequestURI()+"--"+antPathMatcher.match(urls.get(0),request.getRequestURI()));
             return urls.stream().anyMatch(
                     url -> antPathMatcher.match(url,request.getRequestURI())
             );

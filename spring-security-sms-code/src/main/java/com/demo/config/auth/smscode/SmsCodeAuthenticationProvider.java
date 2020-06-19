@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 /**
- * 短信认证具体的实现
+ * 短信认证具体的实现 ( 仿 DaoAuthenticationProvider )
  * 短信认证流程: SmsCodeAuthenticationFilter -> AuthenticationManager -> SmsCodeAuthenticationProvider -> UserDetailsService
  */
 public class SmsCodeAuthenticationProvider implements AuthenticationProvider {
@@ -37,6 +37,7 @@ public class SmsCodeAuthenticationProvider implements AuthenticationProvider {
         if(userDetails == null){
             throw new InternalAuthenticationServiceException("无法根据手机号获取用户信息");
         }
+        //存放认证信息，认证之前放的是手机号，认证之后UserDetails
         SmsCodeAuthenticationToken authenticationResult
                 = new SmsCodeAuthenticationToken(userDetails,userDetails.getAuthorities());
         authenticationResult.setDetails(authenticationToken.getDetails());

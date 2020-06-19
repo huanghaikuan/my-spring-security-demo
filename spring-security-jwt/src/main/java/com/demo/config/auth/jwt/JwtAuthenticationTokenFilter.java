@@ -1,6 +1,13 @@
 package com.demo.config.auth.jwt;
 
-import com.demo.service.MyUserDetailsService;
+import java.io.IOException;
+
+import javax.annotation.Resource;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,12 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.annotation.Resource;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import com.demo.service.MyUserDetailsService;
 
 /**
  * jwt认证过滤器
@@ -39,7 +41,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
             //如果可以正确的从JWT中提取用户信息，并且该用户未被授权
             if(username != null &&
-                    SecurityContextHolder.getContext().getAuthentication() == null){
+                    SecurityContextHolder.getContext().getAuthentication() == null){ //该用户未被授权SecurityContextHolder.getContext().getAuthentication() == null
                 UserDetails userDetails = myUserDetailsService.loadUserByUsername(username);
                 if(jwtTokenUtil.validateToken(jwtToken,userDetails)){
                     //给使用该JWT令牌的用户进行授权

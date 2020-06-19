@@ -1,16 +1,18 @@
 package com.demo.config.auth;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.security.web.session.SessionInformationExpiredEvent;
-import org.springframework.security.web.session.SessionInformationExpiredStrategy;
-
-import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.ServletException;
+
+import org.springframework.security.web.session.SessionInformationExpiredEvent;
+import org.springframework.security.web.session.SessionInformationExpiredStrategy;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
- * session被下线(超时)之后的处理策略
+ * session被下线(超时)之后的处理策略     限制最大登陆用户数量
  */
 public class MyExpiredSessionStrategy implements SessionInformationExpiredStrategy {
 

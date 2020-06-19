@@ -1,16 +1,18 @@
 package com.demo.config.auth;
 
-import com.demo.config.exception.AjaxResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import com.demo.config.exception.AjaxResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * 登录成功后的 处理器
@@ -38,6 +40,8 @@ public class MyAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
                     AjaxResponse.success("/index")
             ));
         }else{
+            //setDefaultTargetUrl(defaultTargetUrl);
+            
             //跳转到登陆之前请求的页面 前后端一体的情况下
             super.onAuthenticationSuccess(request,response,authentication);
         }

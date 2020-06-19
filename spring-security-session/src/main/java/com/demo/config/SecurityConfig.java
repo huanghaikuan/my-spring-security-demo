@@ -1,9 +1,7 @@
 package com.demo.config;
 
-import com.demo.config.auth.MyAuthenticationFailureHandler;
-import com.demo.config.auth.MyAuthenticationSuccessHandler;
-import com.demo.config.auth.MyExpiredSessionStrategy;
-import com.demo.config.auth.MyLogoutSuccessHandler;
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +13,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.annotation.Resource;
+import com.demo.config.auth.MyAuthenticationFailureHandler;
+import com.demo.config.auth.MyAuthenticationSuccessHandler;
+import com.demo.config.auth.MyExpiredSessionStrategy;
+import com.demo.config.auth.MyLogoutSuccessHandler;
 
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -68,9 +69,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .sessionManagement()//session管理
                     .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)  //默认开启session
                     .invalidSessionUrl("/login.html") //非法超时session跳转页面
-                    .sessionFixation().migrateSession() //每次登录验证将创建一个新的session
+                    .sessionFixation().migrateSession() //每次登录验证将创建一个新的session   SessionFixation 
                     .maximumSessions(1) //同一个用户最大的登录数量
-                    .maxSessionsPreventsLogin(false) //true表示已经登录就不予许再次登录，false表示允许再次登录但是之前的登录会下线。
+                    .maxSessionsPreventsLogin(false) //true表示已经登录就不予许再次登录，false(默认)表示允许再次登录但是之前的登录会下线。
                     .expiredSessionStrategy(new MyExpiredSessionStrategy()); //session被下线(超时)之后的处理策略
     }
 

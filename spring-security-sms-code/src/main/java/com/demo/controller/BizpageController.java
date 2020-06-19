@@ -1,11 +1,17 @@
 package com.demo.controller;
 
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.demo.service.MethodELService;
+
 @Controller
 public class BizpageController {
-
+    @Resource
+    MethodELService methodELService;
+    
 //    // 登录
 //    @PostMapping("/login")
 //    public String index(String username,String password) {
@@ -21,6 +27,16 @@ public class BizpageController {
     // 日志管理
     @GetMapping("/syslog")
     public String showOrder() {
+        //methodELService.findAll();
+        //methodELService.findOne();
+
+        /*List<Integer> ids = new ArrayList<>();
+        ids.add(1);
+        ids.add(2);
+        methodELService.delete(ids,null);*/
+
+        //List<PersonDemo> pds = methodELService.findAllPD();
+        
         return "syslog";
     }
 

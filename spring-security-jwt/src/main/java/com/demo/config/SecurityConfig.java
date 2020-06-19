@@ -1,8 +1,10 @@
 package com.demo.config;
 
-import com.demo.config.auth.handler.MyLogoutSuccessHandler;
-import com.demo.config.auth.jwt.JwtAuthenticationTokenFilter;
-import com.demo.service.MyUserDetailsService;
+import java.util.Arrays;
+
+import javax.annotation.Resource;
+import javax.sql.DataSource;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,9 +20,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import javax.annotation.Resource;
-import javax.sql.DataSource;
+import com.demo.config.auth.handler.MyLogoutSuccessHandler;
+import com.demo.config.auth.jwt.JwtAuthenticationTokenFilter;
+import com.demo.service.MyUserDetailsService;
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -42,24 +49,32 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        http.addFilterBefore(jwtAuthenticationTokenFilter,UsernamePasswordAuthenticationFilter.class)
+        http.csrf() //开启跨站csrf攻击防御（跨站请求伪造（英语：Cross-site request forgery））    只防 post delete 等修改请求（不防get,所以不要用get方法去修改数据）
+            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())//作用是本站所有的接口访问都要加上一个随机token(专门验证接口是本站的) withHttpOnlyFalse是前端脚本可获取
+            .ignoringAntMatchers("/authentication") //要忽略掉 JwtAuthController 的登陆（拿令牌）接口
+            .and()
+                .cors() //开启跨域访问的配置（springboot的4种方式都可生效）    这里配置的是  bean:CorsConfigurationSource
+            .and()
+            .addFilterBefore(jwtAuthenticationTokenFilter,UsernamePasswordAuthenticationFilter.class)
                 .logout()
-                .logoutUrl("/signout")
-                //.logoutSuccessUrl("/login.html")
-                .deleteCookies("JSESSIONID")
-                .logoutSuccessHandler(myLogoutSuccessHandler)
-                .and().rememberMe()
-                .rememberMeParameter("remember-me-new")
-                .rememberMeCookieName("remember-me-cookie")
-                .tokenValiditySeconds(2 * 24 * 60 * 60)
-                .tokenRepository(persistentTokenRepository())
-                .and().csrf().disable()
-                .authorizeRequests()
-                .antMatchers("/authentication","/refreshtoken").permitAll()
-                .antMatchers("/index").authenticated()
-                .anyRequest().access("@rabcService.hasPermission(request,authentication)")
-                .and().sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                    .logoutUrl("/signout")
+                    //.logoutSuccessUrl("/login.html")
+                    .deleteCookies("JSESSIONID")
+                    .logoutSuccessHandler(myLogoutSuccessHandler)
+                .and()
+                    .rememberMe()
+                    .rememberMeParameter("remember-me-new")
+                    .rememberMeCookieName("remember-me-cookie")
+                    .tokenValiditySeconds(2 * 24 * 60 * 60)
+                    .tokenRepository(persistentTokenRepository())
+                 .and()
+                    .authorizeRequests()
+                    .antMatchers("/authentication","/refreshtoken").permitAll()
+                    .antMatchers("/index").authenticated()
+                    .anyRequest().access("@rabcService.hasPermission(request,authentication)")
+                 .and()
+                    .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
     }
 
@@ -97,4 +112,16 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+    
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:8888"));
+        configuration.setAllowedMethods(Arrays.asList("GET","POST"));
+        configuration.applyPermitDefaultValues();
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 }

@@ -1,7 +1,7 @@
 package com.demo.config;
 
-import com.demo.config.auth.MyAuthenticationFailureHandler;
-import com.demo.config.auth.MyAuthenticationSuccessHandler;
+import javax.annotation.Resource;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -11,7 +11,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.annotation.Resource;
+import com.demo.config.auth.MyAuthenticationFailureHandler;
+import com.demo.config.auth.MyAuthenticationSuccessHandler;
 
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -35,11 +36,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginProcessingUrl("/login")//登录表单form中action的地址，也就是处理认证请求的路径
                 .usernameParameter("uname") //登录表单的账号参数，不修改的话默认是username
                 .passwordParameter("pword") //登录表单中密码参数，不修改的话默认是password
+                
                 .successHandler(myAuthenticationSuccessHandler)
                 .failureHandler(myAuthenticationFailureHandler)
                 /** 不要配置defaultSuccessUrl和failureUrl，否则自定义handler将失效。handler配置与URL配置只能二选一*/
                 //.defaultSuccessUrl("/index")//登录认证成功后默认转跳的路径
                 //.failureUrl("/login.html") //登录认证是被跳转页面
+                
                 .and()
                 .authorizeRequests() //权限控制
                 .antMatchers("/login.html", "/login")
@@ -67,7 +70,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .and()
                 .withUser("admin")
                 .password(passwordEncoder().encode("123456"))
-                //.authorities("sys:log","sys:user")
+                //.authorities("sys:log","sys:user")  //相当于资源的管理
                 .roles("admin")
                     .and()
                 .passwordEncoder(passwordEncoder());//配置BCrypt加密

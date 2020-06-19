@@ -1,5 +1,8 @@
 package com.demo.config.auth.smscode;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -7,11 +10,8 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.util.Assert;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 /**
- * 自定义用户通过短信认证的过滤器
+ * 自定义用户通过短信认证的过滤器 ( 仿 UsernamePasswordAuthenticationFilter )
  * 代替原来的 UsernamePasswordAuthenticationFilter
  * 短信认证流程: SmsCodeAuthenticationFilter -> AuthenticationManager -> SmsCodeAuthenticationProvider -> UserDetailsService
  */
@@ -34,6 +34,7 @@ public class SmsCodeAuthenticationFilter extends AbstractAuthenticationProcessin
      * @return
      * @throws AuthenticationException
      */
+    @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
                                                 HttpServletResponse response)
             throws AuthenticationException {
@@ -60,12 +61,10 @@ public class SmsCodeAuthenticationFilter extends AbstractAuthenticationProcessin
         return request.getParameter(mobileParameter);
     }
 
-
     protected void setDetails(HttpServletRequest request,
                               SmsCodeAuthenticationToken authRequest) {
         authRequest.setDetails(authenticationDetailsSource.buildDetails(request));
     }
-
 
     public void setMobileParameter(String mobileParameter) {
         Assert.hasText(mobileParameter, "mobile parameter must not be empty or null");

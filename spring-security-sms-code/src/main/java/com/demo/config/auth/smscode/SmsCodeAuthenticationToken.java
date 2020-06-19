@@ -1,13 +1,13 @@
 package com.demo.config.auth.smscode;
 
+import java.util.Collection;
+
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.SpringSecurityCoreVersion;
 
-import java.util.Collection;
-
 /**
- * 自定义短信认证token
+ * 自定义短信认证token （仿 UsernamePasswordAuthenticationToken）
  */
 public class SmsCodeAuthenticationToken extends AbstractAuthenticationToken {
 
@@ -50,7 +50,7 @@ public class SmsCodeAuthenticationToken extends AbstractAuthenticationToken {
     }
 
     @Override
-    public Object getCredentials() {
+    public Object getCredentials() { //这里相当于密码（我们sms登陆不用密码（过滤器已经验证过密码正确），只要手机号）
         return null;
     }
 }

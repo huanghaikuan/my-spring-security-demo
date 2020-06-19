@@ -1,14 +1,15 @@
 package com.demo.config.auth.imagecode;
 
 
-import com.google.code.kaptcha.impl.DefaultKaptcha;
-import com.google.code.kaptcha.util.Config;
+import java.util.Properties;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
-import java.util.Properties;
+import com.google.code.kaptcha.impl.DefaultKaptcha;
+import com.google.code.kaptcha.util.Config;
 
 @Configuration
 @PropertySource(value = {"classpath:kaptcha.properties"})
@@ -54,7 +55,8 @@ public class CaptchaConfig {
         properties.setProperty("kaptcha.textproducer.font.names", fontNames);
         properties.setProperty("kaptcha.textproducer.font.size",fontSize);
         defaultKaptcha.setConfig(new Config(properties));
-
+        //String capText = defaultKaptcha.createText();          // 迷底      验证码文字
+        //BufferedImage bufferedImage =defaultKaptcha.createImage(capText);  // 迷面     生成验证码图片
         return defaultKaptcha;
     }
 }
